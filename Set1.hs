@@ -78,4 +78,21 @@ randTen = generalA (\x -> x + 10) rand
 -- Exercise 1.4 Generalizing Random Pairs
 
 
-randPair :: Gen (Char, Integer)
+randPair :: Gen (Char, Integer) --- randPair (mkSeed 1) output: ('l', 282475249)
+randPair seed = result
+     where
+       (letter, s)  = randLetter seed
+       (num, s2) = rand s
+       result = ((letter, num), s2)
+
+generalPair :: Gen a -> Gen b -> Gen (a,b) -- generalPair :: (Seed -> (a, Seed)) -> (Seed -> (b, Seed)) -> (Seed -> ((a,b), Seed))
+generalPair f g s = ((a,b), s2)
+     where 
+        (a, s1) = f s 
+        (b, s2) = g s1
+
+generalB :: (a -> b -> c) -> Gen a -> Gen b -> Gen c
+generalB f ga gb s = (f a b, s2)
+      where 
+        (a, s1) = ga s
+        (b, s2) = gb s1
