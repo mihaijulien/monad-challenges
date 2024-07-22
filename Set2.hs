@@ -5,17 +5,17 @@ module Set2 where
 
 import MCPrelude
 
-data Maybe a = Just a | Nothing
+data Maybe a = Nothing | Just a deriving (Eq)
 
--- Exercisew 2.1 Build a library of things that can fail
+-- Exercise 2.1 Build a library of things that can fail
 
 headMay :: [a] -> Maybe a
 headMay [] = Nothing
-headMay (x:xs) = Just x
+headMay (x:_) = Just x
 
 tailMay :: [a] -> Maybe [a]
 tailMay [] = Nothing
-tailMay (x:xs) = Just xs
+tailMay (_:xs) = Just xs
 
 lookupMay :: Eq a => a -> [(a, b)] -> Maybe b
 lookupMay _ [] = Nothing
@@ -32,4 +32,34 @@ maximumMay (x:xs) = Just (foldl max x xs)
 minimumMay :: Ord a => [a] -> Maybe a
 minimumMay [] = Nothing
 minimumMay (x:xs) = Just (foldl min x xs)
+
+-- Exercise 2.2 Chains of Failing Computations
+
+queryGreek :: GreekData -> String -> Maybe Double
+queryGreek greek key = case lookupMay key greek of
+    Nothing -> Nothing
+    Just xs -> case tailMay xs of
+      Nothing -> Nothing
+      Just txs -> case maximumMay txs of
+        Nothing -> Nothing
+        Just mxs -> case headMay xs of
+          Nothing -> Nothing
+          Just hxs -> divMay (fromIntegral mxs) (fromIntegral hxs)
+
+chain :: (a -> Maybe b) -> Maybe a -> Maybe b
+chain _ Nothing = Nothing
+chain f (Just a) = f a
+
+link :: Maybe a -> (a -> Maybe b) -> Maybe b
+link Nothing f = Nothing
+link (Just a) f = f a
+
+-- TODO
+-- queryGreek2 :: GreekData -> String -> Maybe Double
+
+addSalaries :: [(String, Integer)] -> String -> String -> Maybe Integer
+addSalaries salaries p1 p2 =
+    case (lookupMay p1 salaries, lookupMay p2 salaries) of
+        (Just s1, Just s2) -> Just (s1 + s2)
+        _ -> Nothing
 
