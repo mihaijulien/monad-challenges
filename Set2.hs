@@ -63,3 +63,26 @@ addSalaries salaries p1 p2 =
         (Just s1, Just s2) -> Just (s1 + s2)
         _ -> Nothing
 
+tailProd :: Num a => [a] -> Maybe a
+tailProd [] = Nothing
+tailProd xs = tailMay xs `link` (Just . product)
+
+tailSum :: Num a => [a] -> Maybe a
+tailSum [] = Nothing
+tailSum xs = tailMay xs `link` (Just . sum)
+
+transMaybe :: (a -> b) -> Maybe a -> Maybe b
+transMaybe _ Nothing = Nothing
+transMaybe f (Just a) = Just (f a)
+
+tailMax :: Ord a => [a] -> Maybe (Maybe a)
+tailMax =  transMaybe maximumMay . tailMay 
+
+tailMin :: Ord a => [a] -> Maybe (Maybe a)
+tailMin =  transMaybe minimumMay . tailMay 
+
+combine :: Maybe (Maybe a) -> Maybe a
+combine Nothing = Nothing
+combine (Just Nothing) = Nothing
+combine (Just (Just a)) = Just a
+
