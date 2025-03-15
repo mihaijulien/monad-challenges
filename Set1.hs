@@ -96,3 +96,26 @@ generalB f ga gb s = (f a b, s2)
       where 
         (a, s1) = ga s
         (b, s2) = gb s1
+
+-- Exercise 1.5 Generalizing Lists of Generators
+
+-- type Gen a = Seed -> (a, Seed)
+
+repRandom :: [Gen a] -> Gen [a]
+--repRandom :: [Seed -> (a, Seed)] -> (Seed -> ([a], Seed))
+repRandom [] s = ([], s)
+repRandom (x:xs) s = (y : ys, s'')
+  where
+    (y, s') = x s
+    (ys, s'') = repRandom xs s'
+
+-- Exercise 1.6 Threading the random number state
+
+genTwo :: Gen a -> (a -> Gen b) -> Gen b
+genTwo g f s = (x', s'')
+  where
+    (x, s') = g s
+    (x', s'') = f x s'
+
+mkGen :: a -> Gen a
+mkGen x = \s -> (x, s)
