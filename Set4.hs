@@ -4,6 +4,7 @@
 module Set4 where
 
 import MCPrelude
+import Set2
 
 -- Exercise 4.1 Generalizing State and Maybe
 {-
@@ -46,3 +47,30 @@ link :: Maybe a -> (a -> Maybe b) -> Maybe b
 
 -- pattern1 :: m a -> (a -> m b) -> m b
 -- pattern2 :: (a -> b -> c) -> m a -> m b -> m c
+
+-- Exercise 4.3 Formalizing the Pattern
+
+class Monad m where  
+    bind :: m a -> (a -> m b) -> m b 
+    return :: a -> m a 
+
+
+-- Exercise 4.4 Creating Instances
+
+{-
+brush up your knowledge:
+newtype: https://learnyouahaskell.com/functors-applicative-functors-and-monoids#the-newtype-keyword
+typeclasses: https://learnyouahaskell.com/making-our-own-types-and-typeclasses#typeclasses-102
+-} 
+
+newtype Gen a =  Gen { runGen :: Seed -> (a, Seed) }
+
+evalGen :: Gen a -> Seed -> a
+evalGen gen s = fst (runGen gen s)
+
+instance Monad Gen where
+    bind (Gen g) f = Gen $ \s ->
+            let (a, s') = g s
+                Gen g' = f a
+            in g' s'
+    return a = Gen $ \s -> (a, s)
