@@ -100,7 +100,7 @@ yLink f _ Nothing = Nothing
 yLink f (Just a) (Just b) = Just (f a b)
 
 addSalaries2 :: [(String, Integer)] -> String -> String -> Maybe Integer
-addSalaries2 salaries p1 p2 = ylink (+) (lookupMay p1 salaries) (lookupMay p2 salaries)
+addSalaries2 salaries p1 p2 = yLink (+) (lookupMay p1 salaries) (lookupMay p2 salaries)
 
 -- Exercise 2.6 Tailprod
 
